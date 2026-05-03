@@ -99,11 +99,11 @@ source "proxmox-iso" "ubuntu-server" {
 
   qemu_agent = true
 
-  boot_wait = "5s"
+  boot_wait = "10s"
   boot_command = [
-    "<esc><wait>",
-    "linux /casper/vmlinuz --- autoinstall ds=nocloud-net;seedfrom=${var.autoinstall_url} <enter><wait>",
-    "initrd /casper/initrd <enter><wait>",
+    "<esc><wait3>",
+    "linux /casper/vmlinuz --- autoinstall ds=nocloud-net;seedfrom=${var.autoinstall_url} <enter><wait3>",
+    "initrd /casper/initrd <enter><wait3>",
     "boot <enter>"
   ]
 
