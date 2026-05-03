@@ -28,6 +28,11 @@ jobs:
         with:
           version: ${{ env.PACKER_VERSION }}
 
+      - name: Write SSH key
+        run: |
+          echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > .tmp_packer_key
+          chmod 600 .tmp_packer_key
+
       - name: Packer Init
         run: packer init ubuntu-server.pkr.hcl
 
@@ -37,9 +42,12 @@ jobs:
           PKR_VAR_proxmox_api_url: ${{ secrets.PROXMOX_API_URL }}
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
-          PKR_VAR_ssh_private_key: ${{ secrets.PACKER_SSH_PRIVATE_KEY }}
           PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
           PKR_VAR_autoinstall_url: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/http/"
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f .tmp_packer_key
 
   build:
     name: Build Template
@@ -54,6 +62,11 @@ jobs:
         with:
           version: ${{ env.PACKER_VERSION }}
 
+      - name: Write SSH key
+        run: |
+          echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > .tmp_packer_key
+          chmod 600 .tmp_packer_key
+
       - name: Packer Init
         run: packer init ubuntu-server.pkr.hcl
 
@@ -64,6 +77,9 @@ jobs:
           PKR_VAR_proxmox_api_url: ${{ secrets.PROXMOX_API_URL }}
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
-          PKR_VAR_ssh_private_key: ${{ secrets.PACKER_SSH_PRIVATE_KEY }}
           PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
           PKR_VAR_autoinstall_url: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/http/"
+
+      - name: Cleanup SSH key
+        if: always()
+        run: rm -f .tmp_packer_key

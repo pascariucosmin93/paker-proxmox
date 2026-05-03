@@ -47,11 +47,6 @@ variable "autoinstall_url" {
   default = "https://raw.githubusercontent.com/GITHUB_USER/REPO_NAME/main/http/"
 }
 
-variable "ssh_private_key" {
-  type      = string
-  sensitive = true
-}
-
 variable "user_password" {
   type      = string
   sensitive = true
@@ -124,14 +119,6 @@ build {
   name    = "ubuntu-server-template"
   sources = ["source.proxmox-iso.ubuntu-server"]
 
-  # Scrie cheia privata intr-un fisier temporar (sters la final)
-  provisioner "shell-local" {
-    inline = [
-      "echo \"${var.ssh_private_key}\" > ${local.ssh_key_file}",
-      "chmod 600 ${local.ssh_key_file}"
-    ]
-  }
-
   provisioner "shell" {
     inline = [
       "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 2; done"
@@ -169,8 +156,4 @@ build {
     expect_disconnect = true
   }
 
-  # Sterge cheia temporara
-  provisioner "shell-local" {
-    inline = ["rm -f ${local.ssh_key_file}"]
-  }
 }
