@@ -74,7 +74,6 @@ source "proxmox-iso" "ubuntu-server" {
     iso_checksum     = var.ubuntu_iso_checksum
     iso_storage_pool = "local"
     iso_download_pve = true
-    unmount_iso      = true
   }
 
   # CPU & RAM
