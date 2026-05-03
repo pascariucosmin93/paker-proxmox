@@ -39,12 +39,12 @@ variable "vm_name" {
 
 variable "ubuntu_iso_url" {
   type    = string
-  default = "https://releases.ubuntu.com/24.04.2/ubuntu-24.04.2-live-server-amd64.iso"
+  default = "https://releases.ubuntu.com/24.04.4/ubuntu-24.04.4-live-server-amd64.iso"
 }
 
 variable "ubuntu_iso_checksum" {
   type    = string
-  default = "sha256:d6dab0c3a657988501b4bd76f1297c053df710e06e0c3aece60dead24f270b4d"
+  default = "sha256:e907d92eeec9df64163a7e454cbc8d7755e8ddc7ed42f99dbc80c40f1a138433"
 }
 
 # URL GitHub raw pentru user-data/meta-data (setat automat din CI)
@@ -69,11 +69,13 @@ source "proxmox-iso" "ubuntu-server" {
   template_description = "Ubuntu Server 24.04 LTS - Built with Packer on ${formatdate("YYYY-MM-DD", timestamp())}"
 
   # ISO - Proxmox il descarca direct (evita 413 prin Cloudflare)
-  iso_url          = var.ubuntu_iso_url
-  iso_checksum     = var.ubuntu_iso_checksum
-  iso_storage_pool = "local"
-  iso_download_pve = true
-  unmount_iso      = true
+  boot_iso {
+    iso_url          = var.ubuntu_iso_url
+    iso_checksum     = var.ubuntu_iso_checksum
+    iso_storage_pool = "local"
+    iso_download_pve = true
+    unmount_iso      = true
+  }
 
   # CPU & RAM
   cores   = 2
