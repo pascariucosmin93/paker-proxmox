@@ -1,0 +1,45 @@
+#cloud-config
+autoinstall:
+  version: 1
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+
+  network:
+    network:
+      version: 2
+      ethernets:
+        ens18:
+          dhcp4: true
+
+  storage:
+    layout:
+      name: lvm
+
+  identity:
+    hostname: ubuntu-template
+    username: ubuntu
+    # Parola: ubuntu  (schimba dupa prima conectare!)
+    password: "$6$rounds=4096$ExDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCy7MCBqMJiTa7V9d/I5vFPeNlLJKlGFKZgDJr."
+
+  ssh:
+    install-server: true
+    allow-pw: true
+
+  packages:
+    - qemu-guest-agent
+    - curl
+    - wget
+
+  user-data:
+    # Permite sudo fara parola pentru user ubuntu (necesar Packer provisioner)
+    users:
+      - name: ubuntu
+        groups: sudo
+        shell: /bin/bash
+        sudo: ALL=(ALL) NOPASSWD:ALL
+
+  late-commands:
+    - systemctl enable qemu-guest-agent
+    - "echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu"
+    - chmod 440 /target/etc/sudoers.d/ubuntu

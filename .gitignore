@@ -1,0 +1,7 @@
+# Packer
+.packer_cache/
+packer_cache/
+*.pkrvars.hcl
+
+# Credentials (nu committa!)
+credentials.auto.pkrvars.hcl
