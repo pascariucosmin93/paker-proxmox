@@ -18,13 +18,13 @@ autoinstall:
 
   identity:
     hostname: ubuntu-template
-    username: ubuntu
-    # Parola: ubuntu  (schimba dupa prima conectare!)
-    password: "$6$rounds=4096$ExDY1mhS4KUYCE/2$zmn9ToZwTKLhCw.b4/b.ZRTIZM30JZ4QrOQ2aOXJ8yk96xpcCy7MCBqMJiTa7V9d/I5vFPeNlLJKlGFKZgDJr."
+    username: cosmin
 
   ssh:
     install-server: true
-    allow-pw: true
+    allow-pw: false
+    authorized-keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJvSANRk+ESYjW5L8b5hLS3hQLyoetzYNKGkttAore2g packer-build"
 
   packages:
     - qemu-guest-agent
@@ -32,14 +32,13 @@ autoinstall:
     - wget
 
   user-data:
-    # Permite sudo fara parola pentru user ubuntu (necesar Packer provisioner)
     users:
-      - name: ubuntu
+      - name: cosmin
         groups: sudo
         shell: /bin/bash
         sudo: ALL=(ALL) NOPASSWD:ALL
 
   late-commands:
     - systemctl enable qemu-guest-agent
-    - "echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu"
-    - chmod 440 /target/etc/sudoers.d/ubuntu
+    - "echo 'cosmin ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/cosmin"
+    - chmod 440 /target/etc/sudoers.d/cosmin

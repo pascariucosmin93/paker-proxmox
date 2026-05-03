@@ -2,6 +2,10 @@
 .packer_cache/
 packer_cache/
 *.pkrvars.hcl
+.tmp_packer_key
 
-# Credentials (nu committa!)
+# SSH keys (nu committa cheia privata!)
+packer_key
+
+# Credentials
 credentials.auto.pkrvars.hcl

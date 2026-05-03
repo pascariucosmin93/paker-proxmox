@@ -37,6 +37,8 @@ jobs:
           PKR_VAR_proxmox_api_url: ${{ secrets.PROXMOX_API_URL }}
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
+          PKR_VAR_ssh_private_key: ${{ secrets.PACKER_SSH_PRIVATE_KEY }}
+          PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
           PKR_VAR_autoinstall_url: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/http/"
 
   build:
@@ -62,4 +64,6 @@ jobs:
           PKR_VAR_proxmox_api_url: ${{ secrets.PROXMOX_API_URL }}
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
+          PKR_VAR_ssh_private_key: ${{ secrets.PACKER_SSH_PRIVATE_KEY }}
+          PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
           PKR_VAR_autoinstall_url: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/http/"

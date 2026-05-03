@@ -37,57 +37,54 @@ variable "vm_name" {
   default = "ubuntu-2404-template"
 }
 
-variable "ubuntu_iso_url" {
+variable "ubuntu_iso_file" {
   type    = string
-  default = "https://releases.ubuntu.com/24.04.4/ubuntu-24.04.4-live-server-amd64.iso"
+  default = "local:iso/ubuntu-24.04.4-live-server-amd64.iso"
 }
 
-variable "ubuntu_iso_checksum" {
-  type    = string
-  default = "sha256:e907d92eeec9df64163a7e454cbc8d7755e8ddc7ed42f99dbc80c40f1a138433"
-}
-
-# URL GitHub raw pentru user-data/meta-data (setat automat din CI)
 variable "autoinstall_url" {
   type    = string
   default = "https://raw.githubusercontent.com/GITHUB_USER/REPO_NAME/main/http/"
 }
 
+variable "ssh_private_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "user_password" {
+  type      = string
+  sensitive = true
+}
+
 # ─── Source ───────────────────────────────────────────────────────────────────
 
+locals {
+  ssh_key_file = "${path.root}/.tmp_packer_key"
+}
+
 source "proxmox-iso" "ubuntu-server" {
-  # Proxmox connection
   proxmox_url              = var.proxmox_api_url
   username                 = var.proxmox_api_token_id
   token                    = var.proxmox_api_token_secret
   insecure_skip_tls_verify = true
   node                     = var.proxmox_node
 
-  # VM settings
   vm_id                = var.vm_id
   vm_name              = var.vm_name
   template_description = "Ubuntu Server 24.04 LTS - Built with Packer on ${formatdate("YYYY-MM-DD", timestamp())}"
 
-  # ISO - Proxmox il descarca direct (evita 413 prin Cloudflare)
   boot_iso {
-    iso_url          = var.ubuntu_iso_url
-    iso_checksum     = var.ubuntu_iso_checksum
-    iso_storage_pool = "local"
-    iso_download_pve = true
+    iso_file = var.ubuntu_iso_file
   }
 
-  # CPU & RAM
   cores   = 2
   sockets = 1
   memory  = 4096
+  os      = "l26"
 
-  # OS type Linux 2.6+
-  os = "l26"
-
-  # Controller SCSI - necesar pentru io_thread
   scsi_controller = "virtio-scsi-single"
 
-  # Disk - 20 GB
   disks {
     disk_size    = "20G"
     storage_pool = "local-lvm"
@@ -96,21 +93,17 @@ source "proxmox-iso" "ubuntu-server" {
     io_thread    = true
   }
 
-  # Network
   network_adapters {
     model    = "virtio"
     bridge   = "vmbr0"
     firewall = false
   }
 
-  # Cloud-init drive (necesar pentru Terraform + cloud-init ulterior)
   cloud_init              = true
   cloud_init_storage_pool = "local-lvm"
 
-  # QEMU guest agent
   qemu_agent = true
 
-  # Boot command - VM descarca user-data direct din GitHub raw
   boot_wait = "5s"
   boot_command = [
     "<esc><wait>",
@@ -119,9 +112,8 @@ source "proxmox-iso" "ubuntu-server" {
     "boot <enter>"
   ]
 
-  # SSH - Packer se conecteaza dupa instalare pentru provisioning
-  ssh_username           = "ubuntu"
-  ssh_password           = "ubuntu"
+  ssh_username           = "cosmin"
+  ssh_private_key_file   = local.ssh_key_file
   ssh_timeout            = "40m"
   ssh_handshake_attempts = 50
 }
@@ -132,23 +124,31 @@ build {
   name    = "ubuntu-server-template"
   sources = ["source.proxmox-iso.ubuntu-server"]
 
-  # Asteapta cloud-init sa termine
-  provisioner "shell" {
+  # Scrie cheia privata intr-un fisier temporar (sters la final)
+  provisioner "shell-local" {
     inline = [
-      "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 2; done",
-      "echo 'cloud-init done'"
+      "echo \"${var.ssh_private_key}\" > ${local.ssh_key_file}",
+      "chmod 600 ${local.ssh_key_file}"
     ]
   }
 
-  # Instaleaza qemu-guest-agent si face cleanup pentru template
   provisioner "shell" {
     inline = [
+      "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do echo 'Waiting for cloud-init...'; sleep 2; done"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      # Seteaza parola din secret (nu e niciodata in cod)
+      "echo 'cosmin:${var.user_password}' | sudo chpasswd",
+      "sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config",
+
       "sudo apt-get update",
       "sudo apt-get install -y qemu-guest-agent",
       "sudo systemctl enable qemu-guest-agent",
       "sudo systemctl start qemu-guest-agent",
 
-      # Cleanup pentru template curat
       "sudo apt-get clean",
       "sudo apt-get autoremove -y",
       "sudo rm -rf /var/lib/apt/lists/*",
@@ -156,19 +156,21 @@ build {
       "sudo rm -f /var/lib/dbus/machine-id",
       "sudo ln -s /etc/machine-id /var/lib/dbus/machine-id",
 
-      # Reset cloud-init pentru prima pornire pe VM-uri noi
       "sudo cloud-init clean",
       "sudo rm -f /etc/cloud/cloud.cfg.d/subiquity-disable-cloudinit-networking.cfg",
       "sudo rm -f /etc/netplan/00-installer-config.yaml",
 
-      # Sync & done
       "sync"
     ]
   }
 
-  # Shutdown explicit inainte ca Packer sa converteasca in template
   provisioner "shell" {
     inline            = ["sudo shutdown -P now"]
     expect_disconnect = true
+  }
+
+  # Sterge cheia temporara
+  provisioner "shell-local" {
+    inline = ["rm -f ${local.ssh_key_file}"]
   }
 }
