@@ -110,7 +110,8 @@ source "proxmox-iso" "ubuntu-server" {
   ssh_username           = "cosmin"
   ssh_private_key_file   = local.ssh_key_file
   ssh_timeout            = "40m"
-  ssh_handshake_attempts = 50
+  ssh_handshake_attempts = 100
+  ssh_wait_timeout       = "40m"
 }
 
 # ─── Build ────────────────────────────────────────────────────────────────────

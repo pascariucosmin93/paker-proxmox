@@ -19,6 +19,7 @@ autoinstall:
   identity:
     hostname: ubuntu-template
     username: cosmin
+    password: "!"
 
   ssh:
     install-server: true
@@ -39,6 +40,7 @@ autoinstall:
         sudo: ALL=(ALL) NOPASSWD:ALL
 
   late-commands:
-    - systemctl enable qemu-guest-agent
+    - curtin in-target -- systemctl enable qemu-guest-agent
+    - curtin in-target -- systemctl start qemu-guest-agent
     - "echo 'cosmin ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/cosmin"
     - chmod 440 /target/etc/sudoers.d/cosmin
