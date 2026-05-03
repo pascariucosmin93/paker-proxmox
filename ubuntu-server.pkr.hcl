@@ -10,19 +10,16 @@ packer {
 # ─── Variables ────────────────────────────────────────────────────────────────
 
 variable "proxmox_api_url" {
-  type    = string
-  default = "https://proxmox.cosmin-lab.cloud/api2/json"
+  type = string
 }
 
 variable "proxmox_api_token_id" {
-  type    = string
-  default = "root@pam!terraform"
+  type = string
 }
 
 variable "proxmox_api_token_secret" {
   type      = string
   sensitive = true
-  default   = "0288fb63-b842-4d55-93b0-7a0a4b76e7c5"
 }
 
 variable "proxmox_node" {
@@ -48,6 +45,12 @@ variable "ubuntu_iso_url" {
 variable "ubuntu_iso_checksum" {
   type    = string
   default = "sha256:d6dab0c3a657988501b4bd76f1297c053df710e06e0c3aece60dead24f270b4d"
+}
+
+# URL GitHub raw pentru user-data/meta-data (setat automat din CI)
+variable "autoinstall_url" {
+  type    = string
+  default = "https://raw.githubusercontent.com/GITHUB_USER/REPO_NAME/main/http/"
 }
 
 # ─── Source ───────────────────────────────────────────────────────────────────
@@ -105,14 +108,11 @@ source "proxmox-iso" "ubuntu-server" {
   # QEMU guest agent
   qemu_agent = true
 
-  # HTTP server local pentru autoinstall
-  http_directory = "http"
-
-  # Boot command - porneste autoinstall via kernel params
+  # Boot command - VM descarca user-data direct din GitHub raw
   boot_wait = "5s"
   boot_command = [
     "<esc><wait>",
-    "linux /casper/vmlinuz --- autoinstall ds=nocloud-net;seedfrom=http://{{.HTTPIP}}:{{.HTTPPort}}/ <enter><wait>",
+    "linux /casper/vmlinuz --- autoinstall ds=nocloud-net;seedfrom=${var.autoinstall_url} <enter><wait>",
     "initrd /casper/initrd <enter><wait>",
     "boot <enter>"
   ]
