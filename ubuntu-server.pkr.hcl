@@ -68,10 +68,11 @@ source "proxmox-iso" "ubuntu-server" {
   vm_name              = var.vm_name
   template_description = "Ubuntu Server 24.04 LTS - Built with Packer on ${formatdate("YYYY-MM-DD", timestamp())}"
 
-  # ISO
+  # ISO - Proxmox il descarca direct (evita 413 prin Cloudflare)
   iso_url          = var.ubuntu_iso_url
   iso_checksum     = var.ubuntu_iso_checksum
   iso_storage_pool = "local"
+  iso_download_pve = true
   unmount_iso      = true
 
   # CPU & RAM
