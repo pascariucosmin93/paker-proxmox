@@ -42,13 +42,17 @@ variable "ubuntu_iso_file" {
   default = "local:iso/ubuntu-24.04.4-live-server-amd64.iso"
 }
 
-variable "autoinstall_url" {
+variable "runner_private_ip" {
   type = string
 }
 
 variable "user_password" {
   type      = string
   sensitive = true
+}
+
+variable "ssh_public_key" {
+  type = string
 }
 
 # ─── Source ───────────────────────────────────────────────────────────────────
@@ -98,19 +102,29 @@ source "proxmox-iso" "ubuntu-server" {
 
   qemu_agent = true
 
+  http_bind_address = var.runner_private_ip
+  http_port_min     = 8802
+  http_port_max     = 8802
+  http_content = {
+    "/meta-data" = file("${path.root}/http/meta-data")
+    "/user-data" = templatefile("${path.root}/http/user-data.pkrtpl", {
+      ssh_public_key = trimspace(var.ssh_public_key)
+    })
+  }
+
   boot_wait = "10s"
   boot_command = [
     "c<wait5>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=${var.autoinstall_url} --- <enter><wait5>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://${var.runner_private_ip}:8802/ --- <enter><wait5>",
     "initrd /casper/initrd <enter><wait5>",
     "boot <enter>"
   ]
 
   ssh_username           = "cosmin"
   ssh_private_key_file   = local.ssh_key_file
-  ssh_timeout            = "40m"
-  ssh_handshake_attempts = 100
-  ssh_wait_timeout       = "40m"
+  ssh_timeout            = "45m"
+  ssh_handshake_attempts = 200
+  ssh_wait_timeout       = "45m"
 }
 
 # ─── Build ────────────────────────────────────────────────────────────────────

@@ -6,6 +6,14 @@ autoinstall:
   keyboard:
     layout: us
 
+  network:
+    version: 2
+    ethernets:
+      uplink:
+        match:
+          name: "en*"
+        dhcp4: true
+
   storage:
     layout:
       name: lvm
@@ -19,12 +27,13 @@ autoinstall:
     install-server: true
     allow-pw: false
     authorized-keys:
-      - "PACKER_SSH_PUBLIC_KEY"
+      - "${ssh_public_key}"
 
   packages:
     - qemu-guest-agent
     - curl
     - wget
+    - openssh-server
 
   late-commands:
     - curtin in-target -- systemctl enable qemu-guest-agent
