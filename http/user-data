@@ -6,13 +6,6 @@ autoinstall:
   keyboard:
     layout: us
 
-  network:
-    network:
-      version: 2
-      ethernets:
-        ens18:
-          dhcp4: true
-
   storage:
     layout:
       name: lvm
