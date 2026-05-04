@@ -19,7 +19,7 @@ autoinstall:
     install-server: true
     allow-pw: false
     authorized-keys:
-      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJvSANRk+ESYjW5L8b5hLS3hQLyoetzYNKGkttAore2g packer-build"
+      - "PACKER_SSH_PUBLIC_KEY"
 
   packages:
     - qemu-guest-agent
