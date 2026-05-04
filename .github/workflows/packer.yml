@@ -33,10 +33,10 @@ jobs:
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > .tmp_packer_key
           chmod 600 .tmp_packer_key
 
-      - name: Inject SSH public key into autoinstall
+      - name: Export SSH public key
         run: |
           ssh-keygen -y -f .tmp_packer_key > .tmp_packer_key.pub
-          sed -i "s|PACKER_SSH_PUBLIC_KEY|$(cat .tmp_packer_key.pub)|" http/user-data
+          echo "PKR_VAR_ssh_public_key=$(tr -d '\n' < .tmp_packer_key.pub)" >> "$GITHUB_ENV"
 
       - name: Packer Init
         run: packer init ubuntu-server.pkr.hcl
@@ -48,7 +48,7 @@ jobs:
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
           PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
-          PKR_VAR_autoinstall_url: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/http/"
+          PKR_VAR_runner_private_ip: ${{ secrets.RUNNER_PRIVATE_IP }}
 
       - name: Cleanup SSH key
         if: always()
@@ -72,10 +72,10 @@ jobs:
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > .tmp_packer_key
           chmod 600 .tmp_packer_key
 
-      - name: Inject SSH public key into autoinstall
+      - name: Export SSH public key
         run: |
           ssh-keygen -y -f .tmp_packer_key > .tmp_packer_key.pub
-          sed -i "s|PACKER_SSH_PUBLIC_KEY|$(cat .tmp_packer_key.pub)|" http/user-data
+          echo "PKR_VAR_ssh_public_key=$(tr -d '\n' < .tmp_packer_key.pub)" >> "$GITHUB_ENV"
 
       - name: Packer Init
         run: packer init ubuntu-server.pkr.hcl
@@ -88,7 +88,7 @@ jobs:
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
           PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
-          PKR_VAR_autoinstall_url: "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.ref_name }}/http/"
+          PKR_VAR_runner_private_ip: ${{ secrets.RUNNER_PRIVATE_IP }}
 
       - name: Cleanup SSH key
         if: always()
