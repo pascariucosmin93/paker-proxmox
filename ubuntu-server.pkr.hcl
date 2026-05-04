@@ -68,11 +68,7 @@ source "proxmox-iso" "ubuntu-server" {
     iso_file = var.ubuntu_iso_file
   }
 
-  cd_files = [
-    "./http/user-data",
-    "./http/meta-data"
-  ]
-  cd_label = "cidata"
+  http_directory = "http"
 
   cores   = 2
   sockets = 1
@@ -103,7 +99,7 @@ source "proxmox-iso" "ubuntu-server" {
   boot_wait = "10s"
   boot_command = [
     "c<wait5>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud --- <enter><wait5>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ --- <enter><wait5>",
     "initrd /casper/initrd <enter><wait5>",
     "boot <enter>"
   ]
