@@ -19,7 +19,7 @@ env:
 jobs:
   validate:
     name: Validate
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     steps:
       - uses: actions/checkout@v4
 
@@ -56,7 +56,7 @@ jobs:
 
   build:
     name: Build Template
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]   # 👈 AICI
     needs: validate
     if: github.event_name == 'push'
     steps:
