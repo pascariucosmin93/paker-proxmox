@@ -33,6 +33,11 @@ jobs:
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > .tmp_packer_key
           chmod 600 .tmp_packer_key
 
+      - name: Inject SSH public key into autoinstall
+        run: |
+          ssh-keygen -y -f .tmp_packer_key > .tmp_packer_key.pub
+          sed -i "s|PACKER_SSH_PUBLIC_KEY|$(cat .tmp_packer_key.pub)|" http/user-data
+
       - name: Packer Init
         run: packer init ubuntu-server.pkr.hcl
 
@@ -47,7 +52,7 @@ jobs:
 
       - name: Cleanup SSH key
         if: always()
-        run: rm -f .tmp_packer_key
+        run: rm -f .tmp_packer_key .tmp_packer_key.pub
 
   build:
     name: Build Template
@@ -67,6 +72,11 @@ jobs:
           echo "${{ secrets.PACKER_SSH_PRIVATE_KEY }}" > .tmp_packer_key
           chmod 600 .tmp_packer_key
 
+      - name: Inject SSH public key into autoinstall
+        run: |
+          ssh-keygen -y -f .tmp_packer_key > .tmp_packer_key.pub
+          sed -i "s|PACKER_SSH_PUBLIC_KEY|$(cat .tmp_packer_key.pub)|" http/user-data
+
       - name: Packer Init
         run: packer init ubuntu-server.pkr.hcl
 
@@ -82,4 +92,4 @@ jobs:
 
       - name: Cleanup SSH key
         if: always()
-        run: rm -f .tmp_packer_key
+        run: rm -f .tmp_packer_key .tmp_packer_key.pub
