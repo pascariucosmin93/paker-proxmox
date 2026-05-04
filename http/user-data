@@ -2,6 +2,7 @@
 autoinstall:
   version: 1
   locale: en_US.UTF-8
+
   keyboard:
     layout: us
 
@@ -19,7 +20,7 @@ autoinstall:
   identity:
     hostname: ubuntu-template
     username: cosmin
-    password: "!"
+    password: "$6$SvmZL971xoRtmrwC$SaFgrc43WPb7rWPGaq6F4PKYmG7PHDvEH0vr7Ufpj.eU.xTyDQ8nzNXTko7Y18ZFG/0FgyQg3K.6HD0qgg5fy/"
 
   ssh:
     install-server: true
@@ -31,13 +32,6 @@ autoinstall:
     - qemu-guest-agent
     - curl
     - wget
-
-  user-data:
-    users:
-      - name: cosmin
-        groups: sudo
-        shell: /bin/bash
-        sudo: ALL=(ALL) NOPASSWD:ALL
 
   late-commands:
     - curtin in-target -- systemctl enable qemu-guest-agent
