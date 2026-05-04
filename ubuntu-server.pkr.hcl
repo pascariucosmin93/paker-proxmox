@@ -42,6 +42,10 @@ variable "ubuntu_iso_file" {
   default = "local:iso/ubuntu-24.04.4-live-server-amd64.iso"
 }
 
+variable "autoinstall_url" {
+  type = string
+}
+
 variable "user_password" {
   type      = string
   sensitive = true
@@ -67,8 +71,6 @@ source "proxmox-iso" "ubuntu-server" {
   boot_iso {
     iso_file = var.ubuntu_iso_file
   }
-
-  http_directory = "http"
 
   cores   = 2
   sockets = 1
@@ -99,7 +101,7 @@ source "proxmox-iso" "ubuntu-server" {
   boot_wait = "10s"
   boot_command = [
     "c<wait5>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ --- <enter><wait5>",
+    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=${var.autoinstall_url} --- <enter><wait5>",
     "initrd /casper/initrd <enter><wait5>",
     "boot <enter>"
   ]
