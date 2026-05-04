@@ -115,7 +115,7 @@ source "proxmox-iso" "ubuntu-server" {
   boot_wait = "10s"
   boot_command = [
     "c<wait5>",
-    "linux /casper/vmlinuz autoinstall ds=nocloud-net\\;s=http://${var.runner_private_ip}:8802/ --- <enter><wait5>",
+    "linux /casper/vmlinuz ip=dhcp autoinstall ds=nocloud-net\\;s=http://${var.runner_private_ip}:8802/ --- <enter><wait5>",
     "initrd /casper/initrd <enter><wait5>",
     "boot <enter>"
   ]
