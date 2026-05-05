@@ -42,7 +42,7 @@ variable "network_bridge" {
 
 variable "vm_id" {
   type    = number
-  default = 9000
+  default = 102
 }
 
 variable "vm_name" {
