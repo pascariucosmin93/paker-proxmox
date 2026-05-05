@@ -101,7 +101,8 @@ source "proxmox-clone" "ubuntu-server" {
   }
 
   ipconfig {
-    ip = "dhcp"
+    ip      = "10.10.1.50/24"
+    gateway = "10.10.1.1"
   }
 
   cloud_init              = true
