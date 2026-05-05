@@ -27,7 +27,7 @@ variable "proxmox_node" {
 
 variable "clone_vm_id" {
   type    = number
-  default = 90000
+  default = 100
 }
 
 variable "storage_pool" {
@@ -37,7 +37,7 @@ variable "storage_pool" {
 
 variable "network_bridge" {
   type    = string
-  default = "vmbr1"
+  default = "vmbr0"
 }
 
 variable "vm_id" {
@@ -101,8 +101,8 @@ source "proxmox-clone" "ubuntu-server" {
   }
 
   ipconfig {
-    ip      = "10.10.1.50/24"
-    gateway = "10.10.1.1"
+    ip      = "192.168.1.241/24"
+    gateway = "192.168.1.1"
   }
 
   cloud_init              = true
