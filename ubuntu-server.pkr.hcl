@@ -105,6 +105,8 @@ source "proxmox-clone" "ubuntu-server" {
     gateway = "192.168.1.1"
   }
 
+  cloud_init              = true
+  cloud_init_storage_pool = var.storage_pool
   qemu_agent              = true
   vm_interface            = "ens18"
 
