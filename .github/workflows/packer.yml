@@ -5,13 +5,13 @@ on:
     branches: [main, master]
     paths:
       - "**.pkr.hcl"
-      - "http/**"
+      - "scripts/**"
       - ".github/workflows/packer.yml"
   pull_request:
     branches: [main, master]
     paths:
       - "**.pkr.hcl"
-      - "http/**"
+      - "scripts/**"
 
 env:
   PACKER_VERSION: "1.11.0"
@@ -48,7 +48,6 @@ jobs:
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
           PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
-          PKR_VAR_runner_private_ip: ${{ secrets.RUNNER_PRIVATE_IP }}
 
       - name: Cleanup SSH key
         if: always()
@@ -88,7 +87,6 @@ jobs:
           PKR_VAR_proxmox_api_token_id: ${{ secrets.PROXMOX_TOKEN_ID }}
           PKR_VAR_proxmox_api_token_secret: ${{ secrets.PROXMOX_TOKEN_SECRET }}
           PKR_VAR_user_password: ${{ secrets.COSMIN_PASSWORD }}
-          PKR_VAR_runner_private_ip: ${{ secrets.RUNNER_PRIVATE_IP }}
 
       - name: Cleanup SSH key
         if: always()
