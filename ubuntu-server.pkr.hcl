@@ -25,9 +25,9 @@ variable "proxmox_node" {
   default = "pve"
 }
 
-variable "clone_vm_name" {
-  type    = string
-  default = "ubuntu-2404-cloud-base"
+variable "clone_vm_id" {
+  type    = number
+  default = 90000
 }
 
 variable "storage_pool" {
@@ -37,7 +37,7 @@ variable "storage_pool" {
 
 variable "network_bridge" {
   type    = string
-  default = "vmbr0"
+  default = "vmbr1"
 }
 
 variable "vm_id" {
@@ -70,7 +70,7 @@ source "proxmox-clone" "ubuntu-server" {
   insecure_skip_tls_verify = true
   node                     = var.proxmox_node
 
-  clone_vm = var.clone_vm_name
+  clone_vm_id = var.clone_vm_id
   full_clone = true
 
   vm_id    = var.vm_id
@@ -109,7 +109,7 @@ source "proxmox-clone" "ubuntu-server" {
   qemu_agent              = true
   vm_interface            = "ens18"
 
-  ssh_username           = "ubuntu"
+  ssh_username           = "root"
   ssh_private_key_file   = local.ssh_key_file
   ssh_timeout            = "20m"
   ssh_handshake_attempts = 100
