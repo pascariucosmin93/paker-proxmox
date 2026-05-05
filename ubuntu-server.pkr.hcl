@@ -110,6 +110,7 @@ source "proxmox-clone" "ubuntu-server" {
   qemu_agent              = true
   vm_interface            = "ens18"
 
+  ssh_host               = "192.168.1.241"
   ssh_username           = "root"
   ssh_private_key_file   = local.ssh_key_file
   ssh_timeout            = "20m"
